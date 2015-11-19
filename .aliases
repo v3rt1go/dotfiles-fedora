@@ -1,0 +1,11 @@
+# Aliases file
+
+# General
+alias cl=clear
+
+# Taskwarrior
+alias tw=task
+alias twa='task add'
+
+# Pretty print the path
+alias path='echo $PATH | tr -s ":" "\n"'
