@@ -535,14 +535,17 @@ let g:neomake_javascript_jshint_maker = {
 let g:neomake_javascript_enabled_markers = ['jshint', 'jscs']
 
 " Ctrl P settings
+" only show files that are not ignored by git
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
   " Use Ag over Grep
   autocmd VimEnter * set grepprg=ag\ --nogroup\ --nocolor
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  unlet g:ctrlp_user_command
-  let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+  " unlet g:ctrlp_user_command
+  let g:ctrlp_user_command += ['ag %s -l --nocolor --hidden -g ""']
 
   " ag is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
@@ -552,11 +555,6 @@ endif
 let g:ctrlp_funky_matchtype = 'path'
 " Turn on syntax highlight for CtrlPFuncky
 let g:ctrlp_funky_syntax_highlight = 1
-
-" CtrlP ignore patterns
-" only show files that are not ignored by git
-" unlet g:ctrlp_user_command
-" let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 
 " ctrlp to ignore these patterns
 let g:ctrlp_custom_ignore = {
@@ -604,9 +602,10 @@ let g:airline#extensions#syntastic#enabled = 1
 let g:bufferline_echo = 0
 
 " force load powerline symbol
-if exists('g:airline_symbols')
+if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
+
 let g:airline_symbols.space = "\ua0"
 let g:airline_left_sep = ''
 let g:airline_left_alt_sep = ''
