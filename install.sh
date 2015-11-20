@@ -108,11 +108,11 @@ tmux source $HOME/.tmux.conf
 # Configuring nvim
 echo "Linking vim config files"
 ln -sf $DOTFILES/.vimrc $HOME/.vimrc
-ln -sf $DOTFILES/.vimrc.before $HOME/.vimrc.before
-ln -sf $DOTFILES/.vimrc.before.local $HOME/.vimrc.before.local
+#ln -sf $DOTFILES/.vimrc.before $HOME/.vimrc.before
+#ln -sf $DOTFILES/.vimrc.before.local $HOME/.vimrc.before.local
 ln -sf $DOTFILES/.vimrc.bundles $HOME/.vimrc.bundles
-ln -sf $DOTFILES/.vimrc.bundles.default $HOME/.vimrc.bundles.local
-ln -sf $DOTFILES/.vimrc.local $HOME/.vimrc.local
+#ln -sf $DOTFILES/.vimrc.bundles.default $HOME/.vimrc.bundles.local
+#ln -sf $DOTFILES/.vimrc.local $HOME/.vimrc.local
 echo "Installing vim-plug for plugin management"
 mkdir $HOME/.vim
 curl -fLo $HOME/.vim/autoload/plug.vim --create-dirs \
