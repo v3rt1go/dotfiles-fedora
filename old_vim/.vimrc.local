@@ -1,0 +1,392 @@
+" Leader
+let mapleader = " "
+
+" This is for nerdcommenter
+filetype plugin on
+filetype plugin indent on
+
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
+  syntax on
+endif
+
+" Set 256 color mode support for vim
+autocmd VimEnter * set t_Co=256
+
+" General settings
+autocmd VimEnter * set backspace=2   " Backspace deletes like most programs in insert mode
+autocmd VimEnter * set nobackup
+autocmd VimEnter * set nowritebackup
+autocmd VimEnter * set noswapfile    " http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
+autocmd VimEnter * set history=50
+autocmd VimEnter * set ruler         " show the cursor position all the time
+autocmd VimEnter * set showcmd       " display incomplete commands
+autocmd VimEnter * set incsearch     " do incremental searching
+autocmd VimEnter * set laststatus=2  " Always display the status line
+autocmd VimEnter * set autowrite     " Automatically :write before running commands
+autocmd VimEnter * set cursorline
+autocmd VimEnter * set ttimeoutlen=50
+autocmd VimEnter * set relativenumber
+
+" Check this out - to do a proper paste
+" set pastemode=<F2>
+
+" Softtabs, 2 spaces
+autocmd VimEnter * set tabstop=2
+autocmd VimEnter * set shiftwidth=2
+autocmd VimEnter * set shiftround
+autocmd VimEnter * set expandtab
+autocmd VimEnter * set sts=2
+autocmd VimEnter * set ts=2
+autocmd VimEnter * set sw=2
+autocmd VimEnter * set et
+
+" Display extra whitespace
+autocmd VimEnter * set list listchars=tab:»·,trail:·,nbsp:·
+
+" Make it obvious where 80 characters is
+autocmd VimEnter * set textwidth=80
+autocmd VimEnter * set colorcolumn=+1
+
+" Numbers
+autocmd VimEnter * set number
+autocmd VimEnter * set numberwidth=5
+
+" Open new split panes to right and bottom, which feels more natural
+autocmd VimEnter * set splitbelow
+autocmd VimEnter * set splitright
+
+" Autocomplete with dictionary words when spell check is on
+autocmd VimEnter * set complete+=kspell
+
+" Always use vertical diffs
+autocmd VimEnter * set diffopt+=vertical
+
+" Display extra whitespace
+autocmd VimEnter * set list listchars=tab:»·,trail:·,nbsp:·
+
+" Autocomplete with dictionary words when spell check is on
+autocmd VimEnter * set complete+=kspell
+
+" Always use vertical diffs
+autocmd VimEnter * set diffopt+=vertical
+
+" included colorthemes
+" colorscheme molokai
+" colorscheme peaksea
+" colorscheme fruity
+" colorscheme ir_black
+autocmd VimEnter * set nospell
+autocmd VimEnter * colorscheme maui
+
+" Define custom cursorline colors
+autocmd VimEnter * hi CursorLine ctermbg=234 guibg=\#000000
+
+" set darker colors for indent guides
+let g:indent_guides_auto_colors = 0
+autocmd VimEnter * hi IndentGuidesOdd  ctermbg=black
+autocmd VimEnter * hi IndentGuidesEven ctermbg=234
+" set indent guide size
+let g:indent_guides_guide_size = 2
+
+" Load matchit.vim, but only if the user hasn't installed a newer version.
+if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+  runtime! macros/matchit.vim
+endif
+
+augroup vimrcEx
+  autocmd!
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it for commit messages, when the position is invalid, or when
+  " inside an event handler (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+  " Set syntax highlighting for specific file types
+  autocmd BufRead,BufNewFile *.es set filetype=javascript
+  autocmd BufRead,BufNewFile *.md set filetype=markdown
+
+  " Enable spellchecking for Markdown
+  autocmd FileType markdown setlocal spell
+
+  " Automatically wrap at 80 characters for Markdown
+  autocmd BufRead,BufNewFile *.md setlocal textwidth=80
+
+  " Automatically wrap at 72 characters and spell check git commit messages
+  autocmd FileType gitcommit setlocal textwidth=72
+  autocmd FileType gitcommit setlocal spell
+
+  " Allow stylesheets to autocomplete hyphenated words
+  autocmd FileType css,scss,sass setlocal iskeyword+=-
+augroup END
+
+" Tab completion
+" will insert tab at beginning of line,
+" will use completion if not at beginning
+autocmd VimEnter * set wildmode=list:longest,list:full
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
+inoremap <S-Tab> <c-n>
+
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  " Use Ag over Grep
+  autocmd VimEnter * set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  unlet g:ctrlp_user_command
+  let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+" Add custom ignore patterns for CtrlP
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'node':  '\v[\/]\(node_modules|bower_components)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ }
+
+" Enable code folding in javascript files
+" autocmd FileType javascript call JavaScriptFold()
+autocmd VimEnter * set foldmethod=indent
+autocmd VimEnter * set foldlevelstart=1
+autocmd VimEnter * set foldnestmax=100
+
+let javaScript_fold=1         " JavaScript
+
+" JS Beautify config
+autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+
+" Index ctags from any project
+map <Leader>ct :!ctags -R . --exclude=.git --exclude=node_modules --exclude=bower_components --exclude=test<CR>
+
+" Switch between the last two files
+nnoremap <leader><leader> <c-^>
+
+" Get off my lawn
+nnoremap <Left> :echoe "Use h"<CR>
+nnoremap <Right> :echoe "Use l"<CR>
+nnoremap <Up> :echoe "Use k"<CR>
+nnoremap <Down> :echoe "Use j"<CR>
+
+"switch to next / previous buffers
+nnoremap <Leader>bn :bnext<CR>
+nnoremap <Leader>bv :bprevious<CR>
+
+"close current opened tab
+noremap <Leader>bc :bp<BAR> bd #<CR>
+
+" Run commands that require an interactive shell
+nnoremap <Leader>r :RunInInteractiveShell<space>
+
+" Quicker window movement
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+
+" Insert new line from normal mode with OO above and oo below
+" without entering in insert mode
+noremap OO O<Esc>
+noremap oo o<Esc>
+
+" Key to toggle undotree plugin
+nnoremap <F5> :UndotreeToggle<CR>
+
+" Mapping for tagbar. Requires ctags, jsctags and tern_for_vim installed
+nnoremap <F8> :TagbarToggle<CR>
+
+" Treat <li> and <p> tags like the block tags they are
+let g:html_indent_tags = 'li\|p'
+
+" SYNTACTIC CONFIG
+" configure syntastic syntax checking to check on open as well as save
+" let g:syntastic_check_on_open=1
+" let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+" let g:syntastic_eruby_ruby_quiet_messages =
+"     \ {"regex": "possibly useless use of a variable in void context"}
+
+" syntactic noob friendly configs
+" autocmd VimEnter * set statusline+=%#warningmsg#
+" autocmd VimEnter * set statusline+=%{SyntasticStatuslineFlag()}
+" autocmd VimEnter * set statusline+=%*
+" let g:syntastic_javascript_checkers = ['eslint']
+
+" check if we have .eslintrc in root, else load jshint
+" autocmd FileType javascript let b:syntastic_checkers = findfile('.eslintrc', '.;') != '' ? ['eslint'] : ['jshint']
+" let g:syntastic_always_populate_loc_list = 1
+
+" let g:syntastic_auto_loc_list = 0
+" let g:syntastic_check_on_wq = 0
+" END SYNTACTIC CONFIG
+
+" Make CtrlP Funky search on path instead of line
+let g:ctrlp_funky_matchtype = 'path'
+" Turn on syntax highlight for CtrlPFuncky
+let g:ctrlp_funky_syntax_highlight = 1
+
+" Airline configuration
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#exclude_preview = 1
+let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
+let g:airline#extensions#tabline#show_tab_nr = 1
+
+" Do not show buffers on tabline when no tabs are opened
+let g:airline#extensions#tabline#show_buffers = 0 
+
+let g:airline#extensions#tmuxline#enabled = 1
+
+let g:airline_powerline_fonts = 1
+let g:airline_detect_paste=1
+let g:airline_theme='tomorrow'
+
+let g:airline#extensions#ctrlp#show_adjacent_modes = 1
+let g:airline#extensions#ctrlp#color_template = 'visual'
+let g:airline#extensions#whitespace#enabled = 1
+let g:airline#extensions#syntastic#enabled = 1
+" Disable current buffers being printed to command line
+let g:bufferline_echo = 0
+
+" force load powerline symbol
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+
+" Toggle AirlineRefresh when theme goes out of sync
+nnoremap <F3> :AirlineRefresh<CR>
+
+" Do not use same color from line number on SignColumn
+let g:gitgutter_override_sign_column_highlight = 0
+autocmd VimEnter * hi GitGutterAdd ctermfg=darkgreen
+autocmd VimEnter * hi GitGutterChange ctermfg=darkyellow
+autocmd VimEnter * hi GitGutterDelete ctermfg=darkred
+autocmd VimEnter * hi GitGutterChangeDelete ctermfg=magenta
+nmap ]h <Plug>GitGutterNextHunk
+nmap [h <Plug>GitGutterPrevHunk
+
+" We do not want git signs to replace syntactic signs
+" so we don;t update them realtime or eager load them
+let g:gitgutter_realtime = 0
+let g:gitgutter_eager = 0
+
+" gist-vim config
+let g:gist_clip_command = 'xclip -selection clipboard'
+let g:gist_detect_filetype = 1
+let g:gist_show_privates = 1
+
+" javascript-vim config
+" Allow HTML/CSS syntax highlighting in js files
+let g:javascript_enable_domhtmlcss = 1
+
+" NEOCOMPLETE SETUP
+" Disable AutoComplPop.
+" let g:acp_enableAtStartup = 0
+" Use neocomplete.
+" let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+" let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+" let g:neocomplete#sources#syntax#min_keyword_length = 3
+" let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+
+" Plugin key-mappings.
+" inoremap <expr><C-g>     neocomplete#undo_completion()
+" inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+endfunction
+
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" <C-h>, <BS>: close popup and delete backword char.
+" inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+" inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=tern#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+" if !exists('g:neocomplete#sources#omni#input_patterns')
+"  let g:neocomplete#sources#omni#input_patterns = {}
+" endif
+
+" Do not trigger neocomplete when working with multicursor
+" Called once right before you start selecting multiple cursors
+function! Multiple_cursors_before()
+  if exists(':NeoCompleteLock')==2
+    exe 'NeoCompleteLock'
+  endif
+endfunction
+
+" Called once only when the multiple selection is canceled (default <Esc>)
+function! Multiple_cursors_after()
+  if exists(':NeoCompleteUnlock')==2
+    exe 'NeoCompleteUnlock'
+  endif
+endfunction
+
+" NEOSNIPPETS CONFIGS
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+" imap <expr><TAB>
+"  \ pumvisible() ? "\<C-n>" :
+"  \ neosnippet#expandable_or_jumpable() ?
+"  \    "\<TAB>" : "\<Plug>(neosnippet_expand_or_jump)"
+" smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+" \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
+
+" Merge neosnippets with honza's cooler snippets
+let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
+
+" TERN JS configs
+" Go to definition of item under cursor
+nnoremap <F12> :TernDef<CR>
+" Show documentation for item under cursor
+nnoremap <F1> :TernDoc<CR>
+" Find type of item under cursor
+nnoremap <F2> :TernType<CR>
+" Find all refferences of item under cursor
+nnoremap <C-F12> :TernRef<CR>
